@@ -1,9 +1,11 @@
-// routes/products.js
+/*
+//** routes/products.js
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
 const mysql=require('mysql2');
 const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 
 // Endpoint para obtener todos los productos
@@ -37,7 +39,7 @@ const db = mysql.createConnection({
   host: 'localhost', // Cambia esto si tu base de datos está en otro servidor
   user: 'root',
   password: 'root',
-  database: 'base1',
+  database: 'bd_productos',
   connectTimeout: 60000,
 });
 // Conectar a la base de datos
@@ -127,7 +129,7 @@ router.post('/nuevo',(req,res)=>{
   }); 
   
 })
-contactosRouter.put('/modificar',(req,res)=>{
+router.put('/modificar',(req,res)=>{
   let idContacto=req.body.idContacto;
   let apellido=req.body.apellido;
   let nombres=req.body.nombres;
@@ -157,5 +159,130 @@ router.delete('/:id',(req,res)=>{
       }        
   }); 
 })
+
+module.exports = router; */
+
+const express = require('express');
+const router = express.Router();
+const Product = require('../models/product');
+const db = require('./db'); // Importa la conexión a la base de datos
+const multer = require('multer');
+
+// Configurar Multer para manejar las imágenes
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // La carpeta donde se almacenarán las imágenes
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname); // Nombre del archivo
+    },
+});
+
+const upload = multer({ storage: storage });
+
+// Endpoint para obtener todos los productos
+router.get('/', async (req, res) => {
+    try {
+        const products = await Product.findAll();
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Endpoint para obtener un producto por su ID
+router.get('/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = await Product.findByPk(productId);
+
+        if (!product) {
+            res.status(404).json({ message: 'Producto no encontrado' });
+            return;
+        }
+
+        res.json(product);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Endpoint para crear un nuevo producto
+router.post('/', async (req, res) => {
+    try {
+        const { nombre, descripcion, precio, marca, stock } = req.body;
+        const newProduct = await Product.create({
+            nombre,
+            descripcion,
+            precio,
+            marca,
+            stock,
+        });
+
+        res.json({ message: 'Producto creado con éxito', product: newProduct });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Endpoint para actualizar un producto por su ID
+router.put('/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const { nombre, descripcion, precio, marca, stock } = req.body;
+
+        const product = await Product.findByPk(productId);
+
+        if (!product) {
+            res.status(404).json({ message: 'Producto no encontrado' });
+            return;
+        }
+
+        // Actualiza las propiedades del producto
+        product.nombre = nombre;
+        product.descripcion = descripcion;
+        product.precio = precio;
+        product.marca = marca;
+        product.stock = stock;
+
+        await product.save();
+
+        res.json({ message: 'Producto actualizado con éxito', product });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Endpoint para borrar un producto por su ID
+router.delete('/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = await Product.findByPk(productId);
+
+        if (!product) {
+            res.status(404).json({ message: 'Producto no encontrado' });
+            return;
+        }
+
+        await product.destroy();
+
+        res.json({ message: 'Producto eliminado con éxito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Endpoint para cargar imágenes de productos
+router.post('/upload', upload.single('imagen'), async (req, res) => {
+    try {
+        // Lógica para manejar la carga de imágenes
+        // Accede a la imagen subida con req.file
+        // Ejemplo: const imagen = req.file;
+
+        res.json({ message: 'Imagen subida con éxito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 module.exports = router;

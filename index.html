@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>API de Catalogo de productos</title>
+</head>
+
+<body>
+    <h1>API de Catalogo de productos</h1>
+    <form id="getProductosForm">
+        <button type="button" onclick="obtenerProductos()">Obtener Productos</button>
+    </form>
+
+    <h2>Crear Nuevo Producto</h2>
+    <form id="crearProductoForm" onsubmit="crearProducto(event)">
+        <input type="number" id="codigo" placeholder="Codigo" required>
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="descripcion" placeholder="Descripcion" required>
+        <input type="number" id="precio" placeholder="Precio" required>
+        <input type="text" id="marca" placeholder="Marca" required>
+        <input type="number" id="stock" placeholder="Stock" required>
+        <input type="file" id="imagen" placeholder="Imagen" accept="image/*" required>
+        <button type="submit">Crear Producto</button>
+    </form>
+
+    <h2>Actualizar Producto</h2>
+    <form id="actualizarProductoForm" onsubmit="actualizarProducto(event)">
+        <input type="number" id="idproducto" placeholder="ID Producto" required>
+        <input type="number" id="idcodigo" placeholder="Codigo Actualizado" required>
+        <input type="text" id="nuevoNombre" placeholder="Nombre Actualizado" required>
+        <input type="text" id="nuevoDescripcion" placeholder="Descripcion Actualizado" required>
+        <input type="number" id="nuevoPrecio" placeholder="Precio Actualizado" required>
+        <input type="text" id="nuevoMarca" placeholder="Marca Actualizado" required>
+        <input type="number" id="nuevoStock" placeholder="Stock Actualizado" required>
+        <input type="file" id="nuevoImagen" placeholder="Imagen Actualizado" accept="image/*" required>
+        <button type="submit">Actualizar Producto</button>
+    </form>
+
+    <h2>Eliminar Producto</h2>
+    <form id="borrarProductoForm" onsubmit="borrarProducto(event)">
+        <input type="text" id="idproductoBorrar" placeholder="ID del producto a Eliminar" required>
+        <button type="submit">Eliminar Producto</button>
+    </form>
+    <br>
+    <hr><br>
+    <div id="response"></div>
+
+    <script>
+        const baseUrl = 'http://localhost:3020/api/1.0/productos';
+
+        function obtenerProductos() {
+            fetch(baseUrl)
+                .then(response => response.json())
+                .then(data => {
+                    let salida = '<table width="60%" border="1"><thead> Lista de Productos Registrados</thead>'
+                    let listaProductos = [];
+                    listaProductos = data;
+                    listaProductos.forEach((producto) => {
+                        salida += `<tr><td>${producto.idProducto}</td><td>${producto.nombre}</td><td>${producto.descripcion} 
+                        </td><td>${producto.precio}</td></tr>`
+                    })
+                    salida += '</table>'
+                    document.getElementById('response').innerHTML = salida;
+                });
+        }
+
+        function crearProducto(event) {
+            event.preventDefault();
+            const formData = new FormData(document.getElementById('crearProductoForm'));
+
+            fetch(baseUrl, {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('response').innerText = data;
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Error en la solicitud:', error);
+                });
+        }
+
+        function actualizarProducto(event) {
+            event.preventDefault();
+            const formData = new FormData(document.getElementById('actualizarProductoForm'));
+
+            fetch(baseUrl, {
+                method: 'PUT',
+                body: formData,
+            })
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('response').innerText = data;
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Error en la solicitud:', error);
+                });
+        }
+
+        function borrarProducto(event) {
+            event.preventDefault();
+            const idProducto = document.getElementById('idproductoBorrar').value;
+
+            fetch(`${baseUrl}/${idProducto}`, {
+                method: 'DELETE',
+            })
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('response').innerText = data;
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Error en la solicitud:', error);
+                });
+        }
+    </script>
+</body>
+
+</html>
