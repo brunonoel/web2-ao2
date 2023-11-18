@@ -12,7 +12,7 @@
     </form>
 
     <h2>Crear Nuevo Producto</h2>
-    <form id="crearProductoForm" onsubmit="crearProducto(event)">
+    <form id="crearProductoForm" action="/api/1.0/productos" method="POST" onsubmit="crearProducto(event)">
         <input type="number" id="codigo" placeholder="Codigo" required>
         <input type="text" id="nombre" placeholder="Nombre" required>
         <input type="text" id="descripcion" placeholder="Descripcion" required>
