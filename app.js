@@ -28,7 +28,7 @@ app.post('/products', upload.array('images'), (req, res) => {
   res.send('Productos creados con éxito');
 });
 
-app.use('/products', productRoutes);
+app.use('/api/1.0', productRoutes);
 
 app.get('/', (req, res) => {
   res.send('¡Hola, mundo!');

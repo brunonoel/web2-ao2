@@ -1,5 +1,5 @@
 /*
-//** routes/products.js
+//** routes/productos.js
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// routes/products.js
+// routes/productos.js
 // ... (otros imports)
 
 // Endpoint para cargar imágenes de productos
@@ -181,7 +181,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Endpoint para obtener todos los productos
-router.get('/', async (req, res) => {
+router.get('/productos', async (req, res) => {
     try {
         const products = await Product.findAll();
         res.json(products);
@@ -191,7 +191,7 @@ router.get('/', async (req, res) => {
 });
 
 // Endpoint para obtener un producto por su ID
-router.get('/:id', async (req, res) => {
+router.get('/productos/:id', async (req, res) => {
     try {
         const productId = req.params.id;
         const product = await Product.findByPk(productId);
@@ -208,7 +208,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Endpoint para crear un nuevo producto
-router.post('/', async (req, res) => {
+router.post('/productos/', async (req, res) => {
     try {
         const { nombre, descripcion, precio, marca, stock } = req.body;
         const newProduct = await Product.create({
@@ -226,7 +226,7 @@ router.post('/', async (req, res) => {
 });
 
 // Endpoint para actualizar un producto por su ID
-router.put('/:id', async (req, res) => {
+router.put('/productos/:id', async (req, res) => {
     try {
         const productId = req.params.id;
         const { nombre, descripcion, precio, marca, stock } = req.body;
@@ -254,7 +254,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Endpoint para borrar un producto por su ID
-router.delete('/:id', async (req, res) => {
+router.delete('/productos/:id', async (req, res) => {
     try {
         const productId = req.params.id;
         const product = await Product.findByPk(productId);
@@ -273,7 +273,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Endpoint para cargar imágenes de productos
-router.post('/upload', upload.single('imagen'), async (req, res) => {
+router.post('/productos/upload', upload.single('imagen'), async (req, res) => {
     try {
         // Lógica para manejar la carga de imágenes
         // Accede a la imagen subida con req.file
