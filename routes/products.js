@@ -168,6 +168,9 @@ const Product = require('../models/product');
 const db = require('./db'); // Importa la conexión a la base de datos
 const multer = require('multer');
 
+router.use(express.json());
+router.use(express.text());
+
 // Configurar Multer para manejar las imágenes
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -208,18 +211,23 @@ router.get('/productos/:id', async (req, res) => {
 });
 
 // Endpoint para crear un nuevo producto
-router.post('/productos/', async (req, res) => {
+router.post('/productos/', (req, res) => {
     try {
-        const { nombre, descripcion, precio, marca, stock } = req.body;
-        const newProduct = await Product.create({
-            nombre,
-            descripcion,
-            precio,
-            marca,
-            stock,
-        });
-
-        res.json({ message: 'Producto creado con éxito', product: newProduct });
+        const codigo = req.body.codigo;
+        const nombre = req.body.nombre;
+        const descripcion = req.body.descripcion;
+        const precio = req.body.precio;
+        const marca = req.body.marca;
+        const stock = req.body.stock;
+        db.query(
+            'INSERT INTO productos (codigo, nombre, descripcion, precio, marca, stock) VALUES (?, ?, ?, ?, ?, ?) ',
+            [codigo, nombre, descripcion, precio, marca, stock], (err, result) => {
+                if (err) {
+                    res.status(500).json({ error: err.message });
+                } else {
+                    res.json({ message: 'Producto creado con éxito', product: result });
+                }
+            });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

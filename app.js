@@ -6,7 +6,6 @@ const productRoutes = require('./routes/products');
 const multer = require('multer');
 
 app.use(cors());
-app.use(express.json()); // Agrega esto para procesar el cuerpo de la solicitud como JSON
 
 // Configurar Multer para manejar las imágenes
 const storage = multer.diskStorage({
