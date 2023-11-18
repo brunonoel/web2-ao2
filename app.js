@@ -6,7 +6,6 @@ const productRoutes = require('./routes/products');
 const multer = require('multer');
 
 app.use(cors());
-app.use(express.json()); // Agrega esto para procesar el cuerpo de la solicitud como JSON
 
 // Configurar Multer para manejar las imágenes
 const storage = multer.diskStorage({
@@ -28,7 +27,7 @@ app.post('/products', upload.array('images'), (req, res) => {
   res.send('Productos creados con éxito');
 });
 
-app.use('/products', productRoutes);
+app.use('/api/1.0', productRoutes);
 
 app.get('/', (req, res) => {
   res.send('¡Hola, mundo!');
